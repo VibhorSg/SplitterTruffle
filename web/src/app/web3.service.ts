@@ -12,6 +12,7 @@ export class Web3Service {
     public splitterInstance: any
     public accounts: any
     private splitter: any
+    private eventHandler: any
 
     constructor() { }
 
@@ -39,7 +40,7 @@ export class Web3Service {
         this.splitter.setProvider(this.web3.currentProvider);
 
         console.log("Deploying the contract");
-        this.splitter.deployed({from: this.accounts[0]}).then(async (instance) => {
+        this.splitter.deployed().then(function(instance){
             console.log('Before assigning')
             this.splitterInstance = instance
             console.log(instance)
@@ -52,8 +53,17 @@ export class Web3Service {
 
     async addWatchEvent() {
         console.log("Settig watcher for log")
-        var ev = await this.splitterInstance.LogSplitFunds({}, { fromBlock: 0, toBlock: 'latest' }).watch(function (error, event) { console.log(event); })
-        console.log(ev)
+        this.eventHandler = this.splitterInstance.LogSplitFunds({}, { fromBlock: 0, toBlock: 'latest' }).watch(function (error, event) {
+            if(!error)
+            {
+                console.log(event);
+            }
+            else
+            {
+                console.log(error)
+            } 
+             
+        })
     }
 
 }
